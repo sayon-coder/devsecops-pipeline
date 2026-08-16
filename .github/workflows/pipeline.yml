@@ -106,20 +106,21 @@ jobs:
     needs: deploy-infrastructure
     if: always()
     steps:
-      - name: Send pipeline result to Splunk
+      - name: Send pipeline result to Splunk Observability
         run: |
-          curl -k -X POST "${{ secrets.SPLUNK_URL }}/services/collector/event" \
-            -H "Authorization: Splunk ${{ secrets.SPLUNK_HEC_TOKEN }}" \
+          curl -X POST "https://ingest.sg0.signalfx.com/v2/event" \
+            -H "X-SF-Token: ${{ secrets.SPLUNK_HEC_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "event": {
+            -d '[{
+              "eventType": "github.actions.pipeline",
+              "dimensions": {
                 "pipeline": "devsecops-demo",
-                "commit": "${{ github.sha }}",
                 "branch": "${{ github.ref_name }}",
-                "status": "${{ job.status }}",
-                "triggered_by": "${{ github.actor }}",
-                "timestamp": "${{ github.event.head_commit.timestamp }}"
+                "triggered_by": "${{ github.actor }}"
               },
-              "sourcetype": "github_actions",
-              "index": "devsecops"
-            }'
+              "properties": {
+                "commit": "${{ github.sha }}",
+                "status": "${{ job.status }}",
+                "timestamp": "${{ github.event.head_commit.timestamp }}"
+              }
+            }]'
