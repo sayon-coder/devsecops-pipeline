@@ -122,7 +122,8 @@ def open_github_pr(branch_name, report, commit_sha, vuln_count):
         '--body-file', report_file,
         '--base', 'main',
         '--head', branch_name,
-        '--label', 'security,automated-remediation'
+        '--label', 'security',
+        '--label', 'automated-remediation'
     ], capture_output=True, text=True)
 
     if result.returncode == 0:
