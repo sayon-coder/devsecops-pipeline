@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 
 EXPOSE 5000
