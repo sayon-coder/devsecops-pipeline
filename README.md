@@ -100,6 +100,19 @@ Stream Logs to Splunk
 
 ---
 
+## Autonomous CVE Remediation
+
+When Trivy detects fixable CRITICAL/HIGH vulnerabilities, the pipeline does not just fail and stop. It autonomously:
+
+1. Parses the Trivy JSON report to identify packages with available fixes
+2. Generates a patched Dockerfile with security updates applied
+3. Creates a new git branch named `auto-remediation/{commit}-fix-cves`
+4. Opens a Pull Request authored by the pipeline bot with a full remediation report
+5. Labels the PR with `security` and `automated-remediation` for triage
+6. Streams the remediation event to Splunk Observability
+
+This closes the loop from detection to remediation without human intervention — mean time to remediation measured in seconds, not days.
+
 ## Key Design Principles
 
 **Shift-left security** — Security checks run before deployment, not after. Issues are caught at the earliest possible point in the pipeline where they are cheapest to fix.
