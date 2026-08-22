@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+# AUTO-REMEDIATION: Security patches applied by pipeline
+# Generated: 2026-08-16 17:40:41 UTC
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY main.py .
+
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
